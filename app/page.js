@@ -69,9 +69,215 @@ const questions = [
   ]},
 ]
 
+function CostCalculator({ darkMode }) {
+  const [kmPerYear, setKmPerYear] = useState(15000)
+  const [fuelConsumption, setFuelConsumption] = useState(7)
+  const [fuelPrice, setFuelPrice] = useState(1.75)
+  const [electricityPrice, setElectricityPrice] = useState(0.25)
+  const [evConsumption, setEvConsumption] = useState(16)
+  const [showResults, setShowResults] = useState(false)
+
+  const cardBg = darkMode ? 'bg-slate-800' : 'bg-white'
+  const text = darkMode ? 'text-white' : 'text-slate-800'
+  const textMuted = darkMode ? 'text-slate-400' : 'text-slate-500'
+  const inputBg = darkMode ? 'bg-slate-700 border-slate-600' : 'bg-gray-50 border-gray-200'
+
+  const fuelCostPerYear = (kmPerYear / 100) * fuelConsumption * fuelPrice
+  const evCostPerYear = (kmPerYear / 100) * evConsumption * electricityPrice
+  const savingsPerYear = fuelCostPerYear - evCostPerYear
+  const savingsPerMonth = savingsPerYear / 12
+  const savings5Years = savingsPerYear * 5
+
+  const calculate = () => setShowResults(true)
+  const reset = () => setShowResults(false)
+
+  if (!showResults) {
+    return (
+      <div className={`rounded-3xl p-6 sm:p-8 shadow-2xl ${cardBg}`}>
+        <h2 className={`text-2xl sm:text-3xl font-bold mb-2 ${text}`}>
+          EV vs Petrol/Diesel Calculator
+        </h2>
+        <p className={`mb-8 ${textMuted}`}>
+          See how much you could save by switching to electric
+        </p>
+
+        <div className="space-y-6">
+          <div>
+            <label className={`block text-sm font-semibold mb-2 ${text}`}>
+              Kilometres per year
+            </label>
+            <input
+              type="number"
+              value={kmPerYear}
+              onChange={(e) => setKmPerYear(Number(e.target.value))}
+              className={`w-full p-4 rounded-xl border-2 font-medium ${inputBg} ${text} focus:border-emerald-500 focus:outline-none transition-colors`}
+            />
+            <p className={`text-xs mt-1 ${textMuted}`}>Average in Ireland: 16,000 km/year</p>
+          </div>
+
+          <div>
+            <label className={`block text-sm font-semibold mb-2 ${text}`}>
+              Current fuel consumption (L/100km)
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={fuelConsumption}
+              onChange={(e) => setFuelConsumption(Number(e.target.value))}
+              className={`w-full p-4 rounded-xl border-2 font-medium ${inputBg} ${text} focus:border-emerald-500 focus:outline-none transition-colors`}
+            />
+            <p className={`text-xs mt-1 ${textMuted}`}>Typical petrol car: 6-8 L/100km</p>
+          </div>
+
+          <div>
+            <label className={`block text-sm font-semibold mb-2 ${text}`}>
+              Fuel price (€/litre)
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              value={fuelPrice}
+              onChange={(e) => setFuelPrice(Number(e.target.value))}
+              className={`w-full p-4 rounded-xl border-2 font-medium ${inputBg} ${text} focus:border-emerald-500 focus:outline-none transition-colors`}
+            />
+            <p className={`text-xs mt-1 ${textMuted}`}>Current average in Ireland: ~€1.70-1.80</p>
+          </div>
+
+          <div>
+            <label className={`block text-sm font-semibold mb-2 ${text}`}>
+              Electricity price (€/kWh)
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              value={electricityPrice}
+              onChange={(e) => setElectricityPrice(Number(e.target.value))}
+              className={`w-full p-4 rounded-xl border-2 font-medium ${inputBg} ${text} focus:border-emerald-500 focus:outline-none transition-colors`}
+            />
+            <p className={`text-xs mt-1 ${textMuted}`}>Home: ~€0.20-0.30/kWh • Night rate: ~€0.10-0.15</p>
+          </div>
+
+          <div>
+            <label className={`block text-sm font-semibold mb-2 ${text}`}>
+              EV consumption (kWh/100km)
+            </label>
+            <input
+              type="number"
+              step="0.5"
+              value={evConsumption}
+              onChange={(e) => setEvConsumption(Number(e.target.value))}
+              className={`w-full p-4 rounded-xl border-2 font-medium ${inputBg} ${text} focus:border-emerald-500 focus:outline-none transition-colors`}
+            />
+            <p className={`text-xs mt-1 ${textMuted}`}>Average EV: 15-18 kWh/100km</p>
+          </div>
+
+          <button
+            onClick={calculate}
+            className="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-lg font-bold rounded-2xl shadow-xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-[1.02] transition-all duration-300"
+          >
+            Calculate Savings →
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <div className="text-center mb-8">
+        <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center mb-6 shadow-xl">
+          <span className="text-4xl">💰</span>
+        </div>
+        <h2 className={`text-3xl sm:text-4xl font-extrabold mb-3 ${text}`}>
+          Your Savings
+        </h2>
+        <p className={textMuted}>Based on {kmPerYear.toLocaleString()} km/year</p>
+      </div>
+
+      <div className="space-y-4">
+        <div className={`rounded-2xl p-6 shadow-xl ${cardBg}`}>
+          <h3 className={`text-lg font-bold mb-4 ${text}`}>Annual Fuel Costs</h3>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">⛽</span>
+                <span className={textMuted}>Petrol/Diesel</span>
+              </div>
+              <span className="text-xl font-bold text-red-500">€{fuelCostPerYear.toFixed(0)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">⚡</span>
+                <span className={textMuted}>Electric</span>
+              </div>
+              <span className="text-xl font-bold text-emerald-500">€{evCostPerYear.toFixed(0)}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className={`rounded-2xl p-6 shadow-xl ring-2 ring-emerald-500 ${cardBg}`}>
+          <div className="inline-block px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs font-bold rounded-full mb-4">
+            💰 YOUR SAVINGS
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className={`text-xs font-medium ${textMuted}`}>Per Month</div>
+              <div className="text-2xl font-bold text-emerald-500">€{savingsPerMonth.toFixed(0)}</div>
+            </div>
+            <div className="text-center">
+              <div className={`text-xs font-medium ${textMuted}`}>Per Year</div>
+              <div className="text-2xl font-bold text-emerald-500">€{savingsPerYear.toFixed(0)}</div>
+            </div>
+            <div className="text-center">
+              <div className={`text-xs font-medium ${textMuted}`}>Over 5 Years</div>
+              <div className="text-2xl font-bold text-emerald-500">€{savings5Years.toFixed(0)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className={`rounded-2xl p-6 shadow-xl ${cardBg}`}>
+          <h3 className={`text-lg font-bold mb-4 ${text}`}>Cost Breakdown</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className={textMuted}>Cost per km (Petrol)</span>
+              <span className={`font-semibold ${text}`}>€{((fuelConsumption / 100) * fuelPrice).toFixed(3)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className={textMuted}>Cost per km (Electric)</span>
+              <span className={`font-semibold ${text}`}>€{((evConsumption / 100) * electricityPrice).toFixed(3)}</span>
+            </div>
+            <div className={`h-px ${darkMode ? 'bg-slate-700' : 'bg-gray-200'}`} />
+            <div className="flex justify-between">
+              <span className={textMuted}>Savings per km</span>
+              <span className="font-semibold text-emerald-500">
+                €{(((fuelConsumption / 100) * fuelPrice) - ((evConsumption / 100) * electricityPrice)).toFixed(3)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className={`rounded-2xl p-5 ${darkMode ? 'bg-emerald-900/30' : 'bg-emerald-50'} border-2 border-emerald-500/30`}>
+          <p className={`text-sm ${darkMode ? 'text-emerald-300' : 'text-emerald-700'}`}>
+            💡 <strong>Tip:</strong> Charging at night rates (€0.10-0.15/kWh) could save you even more!
+          </p>
+        </div>
+      </div>
+
+      <div className="text-center mt-8">
+        <button
+          onClick={reset}
+          className="px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold rounded-2xl shadow-xl hover:shadow-emerald-500/30 hover:scale-105 transition-all duration-300"
+        >
+          Calculate Again
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function Home() {
   const [darkMode, setDarkMode] = useState(false)
-  const [started, setStarted] = useState(false)
+  const [activeTab, setActiveTab] = useState('home')
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState({})
   const [showResults, setShowResults] = useState(false)
@@ -142,7 +348,7 @@ export default function Home() {
   }
 
   const resetQuiz = () => {
-    setStarted(false)
+    setActiveTab('home')
     setCurrentQuestion(0)
     setAnswers({})
     setShowResults(false)
@@ -158,7 +364,10 @@ export default function Home() {
   return (
     <div className={`min-h-screen ${bg} transition-colors duration-300`}>
       <header className={`py-4 px-6 flex justify-between items-center border-b ${border} ${cardBg}`}>
-        <div className="flex items-center gap-3">
+        <button 
+          onClick={() => { resetQuiz(); setActiveTab('home'); }}
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+        >
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
             <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -167,7 +376,7 @@ export default function Home() {
           <span className={`text-xl font-bold ${text}`}>
             PickMy<span className="text-emerald-500">EV</span>
           </span>
-        </div>
+        </button>
         
         <button
           onClick={() => setDarkMode(!darkMode)}
@@ -178,7 +387,7 @@ export default function Home() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
-        {!started ? (
+        {activeTab === 'home' ? (
           <div className="text-center">
             <div className="w-28 h-28 mx-auto rounded-3xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center mb-8 shadow-2xl shadow-emerald-500/30 transform hover:scale-105 transition-transform">
               <span className="text-6xl">🔌</span>
@@ -187,24 +396,41 @@ export default function Home() {
               Find Your Perfect EV
             </h1>
             <p className={`text-lg mb-10 ${textMuted} max-w-md mx-auto`}>
-              Answer 6 quick questions and we&apos;ll recommend the best electric vehicles for you in Ireland
+              Tools to help Irish drivers make the switch to electric
             </p>
             
-            <button
-              onClick={() => setStarted(true)}
-              className="px-10 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-lg font-bold rounded-2xl shadow-xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-105 transition-all duration-300"
-            >
-              Start Quiz →
-            </button>
+            <div className="grid sm:grid-cols-2 gap-4 mb-10">
+              <button
+                onClick={() => setActiveTab('quiz')}
+                className={`p-6 rounded-2xl text-left transition-all duration-300 hover:scale-[1.02] ${cardBg} shadow-xl hover:shadow-2xl border-2 border-transparent hover:border-emerald-500`}
+              >
+                <span className="text-4xl mb-4 block">🎯</span>
+                <h3 className={`text-xl font-bold mb-2 ${text}`}>EV Finder Quiz</h3>
+                <p className={`text-sm ${textMuted}`}>
+                  Answer 6 questions and get personalized EV recommendations
+                </p>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('calculator')}
+                className={`p-6 rounded-2xl text-left transition-all duration-300 hover:scale-[1.02] ${cardBg} shadow-xl hover:shadow-2xl border-2 border-transparent hover:border-emerald-500`}
+              >
+                <span className="text-4xl mb-4 block">💰</span>
+                <h3 className={`text-xl font-bold mb-2 ${text}`}>Cost Calculator</h3>
+                <p className={`text-sm ${textMuted}`}>
+                  See how much you could save by switching to electric
+                </p>
+              </button>
+            </div>
             
-            <div className={`mt-16 flex flex-wrap justify-center gap-6 sm:gap-10 ${textMuted}`}>
+            <div className={`flex flex-wrap justify-center gap-6 sm:gap-10 ${textMuted}`}>
               <div className="flex items-center gap-2">
                 <span className="text-2xl">🇮🇪</span>
                 <span className="text-sm font-medium">Ireland Focused</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-2xl">⚡</span>
-                <span className="text-sm font-medium">25+ EVs</span>
+                <span className="text-sm font-medium">Free Tools</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-2xl">🎯</span>
@@ -212,8 +438,25 @@ export default function Home() {
               </div>
             </div>
           </div>
+        ) : activeTab === 'calculator' ? (
+          <div>
+            <button
+              onClick={() => setActiveTab('home')}
+              className={`mb-6 px-4 py-2 rounded-xl font-semibold transition-colors ${textMuted} hover:${text}`}
+            >
+              ← Back
+            </button>
+            <CostCalculator darkMode={darkMode} />
+          </div>
         ) : !showResults ? (
           <div>
+            <button
+              onClick={() => setActiveTab('home')}
+              className={`mb-6 px-4 py-2 rounded-xl font-semibold transition-colors ${textMuted} hover:${text}`}
+            >
+              ← Back
+            </button>
+            
             <div className="mb-8">
               <div className="flex justify-between items-center mb-3">
                 <span className={`text-sm font-semibold ${textMuted}`}>
@@ -261,9 +504,9 @@ export default function Home() {
             {currentQuestion > 0 && (
               <button
                 onClick={() => setCurrentQuestion(prev => prev - 1)}
-                className={`mt-6 px-5 py-2.5 rounded-xl font-semibold transition-colors ${textMuted} hover:${text}`}
+                className={`mt-6 px-5 py-2.5 rounded-xl font-semibold transition-colors ${textMuted}`}
               >
-                ← Back
+                ← Previous Question
               </button>
             )}
           </div>
